@@ -1,8 +1,11 @@
+
 import './App.css';
+import Login from './Components/Login';
 
 function App() {
   return (
     <div className="App">
+      <Login />
       <header className="App-header">
         <img src="Octocat.png" className="App-logo" alt="logo" />
         <p>
