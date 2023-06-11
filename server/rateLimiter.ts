@@ -7,12 +7,10 @@ const requestLimit = 1,
     url: `redis://default:LECMT4nsoTrUfWvRh0wtzlkZRRIXGWfX@${process.env.REDIS_RATE_LIMITER}`,
   });
 
-export default async function rateLimiter(ip) {
-  // req.ip is returning undefined currently, localhost issue?
+export default async function rateLimiter(ip: number | undefined) {
   if (typeof ip === 'undefined') {
     ip = 1234;
   }
-
   try {
     await redisClient.connect();
     // define client key to track requests made by ip
@@ -31,7 +29,7 @@ export default async function rateLimiter(ip) {
 
     if (requestCount > requestLimit) {
       console.log(`Rate limiter detected too many requests from IP ${ip}!`);
-      return new Response ({
+      return new Response({
         requestLimit,
         requestDuration,
         requestCount,
@@ -39,7 +37,7 @@ export default async function rateLimiter(ip) {
       });
     }
 
-    return new Response ({
+    return new Response({
       requestLimit,
       requestDuration,
       requestCount,
