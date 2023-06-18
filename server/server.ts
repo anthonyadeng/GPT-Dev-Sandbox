@@ -1,16 +1,16 @@
 import { createHTTPServer } from '@trpc/server/adapters/standalone';
 import { z } from 'zod';
-import rateLimiter from './rateLimiter';
-import { initTRPC } from '@trpc/server';
+// import rateLimiter from './rateLimiter';
+import { procedure, router } from './trpc';
+import cors from 'cors';
 import {
-  listModels,
+  openaiListModels,
   openaiRequest,
   openaiSetConfig,
 } from '../server/api/openai';
 
-const trpc = initTRPC.create();
-const appRouter = trpc.router({
-  openaiSetConfig: trpc.procedure
+const appRouter = router({
+  openaiSetConfig: procedure
     .input(
       z.object({
         organization: z.string(),
@@ -20,12 +20,32 @@ const appRouter = trpc.router({
     .query(async (opts) => {
       openaiSetConfig(opts.input);
     }),
-
-  openaiListModels: trpc.procedure.query(async () => {
-    return await listModels();
+  greeting: procedure
+    // This is the input schema of your procedure
+    // 💡 Tip: Try changing this and see type errors on the client straight away
+    .input(
+      z
+        .object({
+          name: z.string().nullish(),
+        })
+        .nullish()
+    )
+    .query(({ input }) => {
+      // This is what you're returning to your client
+      return {
+        text: `hello ${input?.name ?? 'world'}`,
+        // 💡 Tip: Try adding a new property here and see it propagate to the client straight-away
+      };
+    }),
+  openaiListModels: procedure.query(async () => {
+    console.log('in trpc listmodels');
+    return {
+      text: 'mytext',
+    };
+    // return JSON.parse(await openaiListModels());
   }),
 
-  openaiRequest: trpc.procedure
+  openaiRequest: procedure
     .input(
       z.object({
         messages: z.array(
@@ -47,7 +67,8 @@ const appRouter = trpc.router({
 export type AppRouter = typeof appRouter;
 
 const server = createHTTPServer({
+  middleware: cors(),
   router: appRouter,
 });
-
-server.listen(3000);
+console.log('listening on 3001');
+server.listen(3001);

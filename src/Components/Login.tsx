@@ -1,26 +1,51 @@
-import { useState, Dispatch, SetStateAction } from 'react';
+import { Box, Typography, TextField, Button } from '@mui/material';
 
 export default function Login({
-  setAPIKey,
+  apiKey,
 }: {
-  setAPIKey: Dispatch<SetStateAction<string>>;
+  apiKey: React.MutableRefObject<string>;
 }) {
-  const [input, setInput] = useState('');
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const data = new FormData(e.currentTarget);
+    const input = formatInput(String(data.get('apiKey')));
+    apiKey.current = input;
+    console.log(apiKey.current);
+  };
+
   return (
     <div style={{ position: 'relative', display: 'inline', fontSize: '15px' }}>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          setAPIKey(formatInput(input));
+      <Box
+        sx={{
+          marginTop: 8,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
-        <input
-          type='text'
-          placeholder='OpenAI API Key'
-          onChange={(e) => setInput(e.target.value)}
-        />
-        <button>OK</button>
-      </form>
+        <Typography component='h1' variant='h5'>
+          Chat-GPT Explorer
+        </Typography>
+        <Box component='form' onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <TextField
+            margin='normal'
+            fullWidth
+            defaultValue={apiKey.current}
+            id='apiKey'
+            label='OpenAI API Key'
+            name='apiKey'
+            autoFocus
+          />
+          <Button
+            type='submit'
+            fullWidth
+            variant='contained'
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Ok!
+          </Button>
+        </Box>
+      </Box>
     </div>
   );
 }

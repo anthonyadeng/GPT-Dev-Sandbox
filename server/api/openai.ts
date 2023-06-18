@@ -15,15 +15,19 @@ export async function openaiSetConfig(cfg: ConfigurationParameters) {
   openai = new OpenAIApi(configuration);
 }
 
-export async function listModels() {
-  if (openai) {
-    try {
-      return await openai.listModels();
-    } catch (err) {
-      console.log('Error in listModels ', err);
-    }
-  }
+export async function openaiListModels() {
+  console.log('in list models');
+  const res = { model1: 'model1' };
+  return JSON.stringify(res);
+  // if (openai) {
+  //   try {
+  //     return await openai.listModels();
+  //   } catch (err) {
+  //     console.log('Error in listModels ', err);
+  //   }
+  // }
 }
+
 export async function openaiRequest(data: openaiRequestData) {
   if (openai) {
     try {
