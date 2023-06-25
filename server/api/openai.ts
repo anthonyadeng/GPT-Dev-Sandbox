@@ -4,7 +4,6 @@ import {
   ConfigurationParameters,
   OpenAIApi,
 } from 'openai';
-
 let openai: undefined | OpenAIApi = undefined;
 
 export async function openaiSetConfig(cfg: ConfigurationParameters) {
@@ -13,19 +12,19 @@ export async function openaiSetConfig(cfg: ConfigurationParameters) {
     apiKey: cfg.apiKey,
   });
   openai = new OpenAIApi(configuration);
+  console.log(openai);
 }
 
 export async function openaiListModels() {
   console.log('in list models');
-  const res = { model1: 'model1' };
-  return JSON.stringify(res);
-  // if (openai) {
-  //   try {
-  //     return await openai.listModels();
-  //   } catch (err) {
-  //     console.log('Error in listModels ', err);
-  //   }
-  // }
+  if (openai) {
+    try {
+      const res = await openai.listModels();
+      return res;
+    } catch (err) {
+      console.log('Error in listModels ', err);
+    }
+  }
 }
 
 export async function openaiRequest(data: openaiRequestData) {

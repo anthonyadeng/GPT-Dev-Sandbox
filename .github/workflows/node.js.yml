@@ -1,0 +1,76 @@
+name: Testing
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration:
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres-testing
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Install Prisma
+        run: npx prisma generate
+
+      - run: npm run build --if-present
+      - run: npm test
+      - run: npm run integration-tests
+        env:
+          DATABASE_URL: 'postgresql://:@localhost:5432/?schema=public'
+
+  lint:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+
+      - name: Cache dependencies
+        id: cache
+        uses: actions/cache@v2
+        with:
+          path: ./node_modules
+          key: modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Install Prisma
+        run: npx prisma generate
+
+      - run: npm run linter

@@ -20,6 +20,7 @@ const appRouter = router({
     .query(async (opts) => {
       openaiSetConfig(opts.input);
     }),
+
   greeting: procedure
     // This is the input schema of your procedure
     // 💡 Tip: Try changing this and see type errors on the client straight away
@@ -37,12 +38,24 @@ const appRouter = router({
         // 💡 Tip: Try adding a new property here and see it propagate to the client straight-away
       };
     }),
+
   openaiListModels: procedure.query(async () => {
     console.log('in trpc listmodels');
-    return {
-      text: 'mytext',
-    };
-    // return JSON.parse(await openaiListModels());
+    const res = await openaiListModels();
+    const responseSchema = z.promise(z.)
+    const result = responseSchema.spa(res)
+    if (!result.success) {
+  // handle error then return
+  result.error;
+} else {
+  // do something
+  result.data;
+}
+    if (typeof res === 'string') {
+      return JSON.parse(res);
+    } else {
+      console.log('Unexpected Response from listModels: ', res);
+    }
   }),
 
   openaiRequest: procedure
