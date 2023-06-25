@@ -1,7 +1,6 @@
 import { Box, Typography, TextField, Button } from '@mui/material';
 import { defaultModelsType } from '../utils/defaultModels';
 import { trpc } from '../utils/trpc';
-import { render, screen } from '@testing-library/react';
 
 interface LoginProps {
     apiKey: React.MutableRefObject<string>;
