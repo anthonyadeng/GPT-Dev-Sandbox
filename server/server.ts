@@ -22,8 +22,6 @@ const appRouter = router({
     }),
 
   greeting: procedure
-    // This is the input schema of your procedure
-    // 💡 Tip: Try changing this and see type errors on the client straight away
     .input(
       z
         .object({
@@ -43,7 +41,7 @@ const appRouter = router({
     console.log('in trpc listmodels');
     const res = await openaiListModels();
     const responseSchema = z.promise(z.)
-    const result = responseSchema.spa(res)
+    const result = await responseSchema.spa(res)
     if (!result.success) {
   // handle error then return
   result.error;
